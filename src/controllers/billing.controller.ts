@@ -5,3 +5,8 @@ export const runBilling = (svc: BillingService) => async (_req: Request, res: Re
   const result = await svc.runOnce();
   res.json(result);
 };
+
+export const getBillingStats = (svc: BillingService) => async (_req: Request, res: Response) => {
+  const result = await svc.stats();
+  res.json(result);
+};

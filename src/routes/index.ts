@@ -9,13 +9,13 @@ import { NodemailerProvider } from '../providers/mail.provider';
 import { MockBoletoProvider } from '../providers/boleto.provider';
 
 import { importCsv } from '../controllers/import.controller';
-import { runBilling } from '../controllers/billing.controller';
+import { runBilling, getBillingStats } from '../controllers/billing.controller'; // ✅ único import
 import { paymentWebhook } from '../controllers/webhook.controller';
 
 const router = Router();
 const upload = multer({ dest: 'tmp/' });
 
-/* DI – instâncias deste módulo (simples e suficiente para o desafio) */
+/* DI – instâncias */
 const repo = new PrismaDebtRepository();
 const mail = new NodemailerProvider();
 const boleto = new MockBoletoProvider();
@@ -27,9 +27,10 @@ const webhookSvc = new WebhookService(repo);
 /* Rotas */
 router.post('/imports', upload.single('file'), importCsv(importSvc));
 router.post('/billing/run', runBilling(billingSvc));
+router.get('/billing/stats', getBillingStats(billingSvc));
 router.post('/webhooks/payments', paymentWebhook(webhookSvc));
 
-/* Healthcheck & debug */
 router.get('/debts', async (_req, res) => res.json(await repo.findAll()));
 
 export default router;
+

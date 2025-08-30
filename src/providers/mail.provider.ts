@@ -39,6 +39,11 @@ export class NodemailerProvider implements MailProvider {
       host: env.smtp.host,
       port: env.smtp.port,
       auth: { user: env.smtp.user, pass: env.smtp.pass },
+      pool: true,
+      maxConnections: 1,
+      maxMessages: 50,     // limite conservador
+      rateDelta: 1000,     // janela de 1s
+      rateLimit: 3         // até 3 msgs/seg
     });
   }
 
@@ -51,11 +56,20 @@ export class NodemailerProvider implements MailProvider {
       to,
       subject: 'Cobrança de Dívida',
       html: `<p>Olá ${name},</p>
-             <p>Você tem uma dívida de <b>R$ ${amount.toFixed(2)}</b> com vencimento em <b>${dueDate.toISOString().slice(0,10)}</b>.</p>
-             <p>Boleto: <a href="${boletoUrl}">${boletoUrl}</a></p>`,
+           <p>Você tem uma dívida de <b>R$ ${amount.toFixed(2)}</b> com vencimento em <b>${dueDate.toISOString().slice(0, 10)}</b>.</p>
+           <p>Boleto: <a href="${boletoUrl}">${boletoUrl}</a></p>`,
     });
 
     const preview = nodemailer.getTestMessageUrl(info);
-    if (preview) log.info('Preview Ethereal:', preview);
+    if (preview) {
+      log.info('Preview Ethereal:', preview);
+    } else if (process.env.MAIL_MODE === 'mock') {
+      // jsonTransport: o info.message contém o MIME, às vezes como Buffer
+      const msg = (info as any).message;
+      const out = Buffer.isBuffer(msg) ? msg.toString() : msg ?? JSON.stringify(info);
+      log.info('Mock email payload:', out);
+    } else {
+      log.info('Email sent:', info.messageId);
+    }
   }
 }
