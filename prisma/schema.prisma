@@ -1,0 +1,35 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DebtStatus {
+  PENDING
+  INVOICED
+  PAID
+}
+
+model Debt {
+  id            String     @id @default(uuid())
+  debtId        String     @unique
+  name          String
+  governmentId  String
+  email         String
+  debtAmount    Decimal    @db.Decimal(18, 2) // R$ com 2 casas
+  debtDueDate   DateTime
+  status        DebtStatus @default(PENDING)
+  boletoUrl     String?    @db.Text
+  lastEmailAt   DateTime?
+  paidAt        DateTime?
+  paidAmount    Decimal?   @db.Decimal(18, 2)
+  paidBy        String?
+
+  @@index([status])
+  @@index([email])
+  @@index([governmentId])
+}

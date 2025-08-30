@@ -14,3 +14,5 @@ yarn-error.log*
 # Sistema
 .DS_Store
 Thumbs.db
+
+/src/generated/prisma

@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import bodyParser from 'body-parser';
-import { InMemoryDebtRepository } from './repositories/debt.repository';
+import { PrismaDebtRepository } from './repositories/debt.repository.prisma';
 import { ImportService } from './services/import.service';
 import { BillingService } from './services/billing.service';
 import { WebhookService } from './services/webhook.service';
@@ -22,7 +22,7 @@ app.use(bodyParser.json({
 app.use(bodyParser.json());
 
 /* DI – instâncias */
-const repo = new InMemoryDebtRepository();
+const repo = new PrismaDebtRepository();
 const mail = new NodemailerProvider();
 const boleto = new MockBoletoProvider();
 
