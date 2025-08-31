@@ -60,39 +60,14 @@ npm run dev
 
 ---
 
-## API
+## API (resumo)
+- `POST /imports` → Importa CSV de dívidas
+- `POST /billing/run` → Executa rodada de billing
+- `GET /billing/stats` → Estatísticas de dívidas
+- `POST /webhooks/payments` → Webhook de pagamento
+- `GET /debts` → Debug (lista todas as dívidas)
 
-### Importar CSV
-`POST /imports` (multipart, campo `file`)  
-Exemplo:
-```bash
-curl -F "file=@src/data/dados_cobranca_seeyu.csv" http://localhost:3000/imports
-```
-
-### Rodar Billing
-`POST /billing/run`  
-Se `CRON_TOKEN` estiver ativo, enviar header:
-```bash
-curl -X POST http://localhost:3000/billing/run -H "Authorization: Bearer dev-cron-token"
-```
-
-### Stats de Billing
-`GET /billing/stats`
-
-### Webhook de Pagamento
-`POST /webhooks/payments` com header `X-Signature: <hmac>`  
-Payload:
-```json
-{
-  "debtId": "8291",
-  "paidAt": "2022-06-09 10:00:00",
-  "paidAmount": 100000.00,
-  "paidBy": "John Doe"
-}
-```
-
-### Listar Dívidas (debug/dev)
-`GET /debts`
+Para detalhes, veja [Swagger UI](http://localhost:3000/docs).
 
 ---
 
@@ -114,17 +89,37 @@ Acesse a UI do Swagger em:
 
 http://localhost:3000/docs
 
-Todas as rotas (`/imports`, `/billing/run`, `/billing/stats`, `/webhooks/payments`) estão documentadas no Swagger com exemplos de payloads e responses.
+Todas as rotas estão documentadas com exemplos de payloads e responses.
 
+---
 
-## API (resumo)
-- `POST /imports` → Importa CSV de dívidas
-- `POST /billing/run` → Executa rodada de billing
-- `GET /billing/stats` → Estatísticas de dívidas
-- `POST /webhooks/payments` → Webhook de pagamento
-- `GET /debts` → Debug (lista todas as dívidas)
+## Demo rápida (cURL)
 
-Para detalhes, veja [Swagger UI](http://localhost:3000/docs).
+1. **Importar CSV**
+```bash
+curl -F "file=@src/data/dados_cobranca_seeyu.csv" http://localhost:3000/imports
+```
+
+2. **Rodar billing**
+```bash
+curl -X POST http://localhost:3000/billing/run
+```
+
+3. **Ver estatísticas**
+```bash
+curl http://localhost:3000/billing/stats
+```
+
+4. **Simular webhook pago**  
+Gerar assinatura HMAC-SHA256 em Node:
+```bash
+node -e "console.log(require('crypto').createHmac('sha256', 'dev-secret').update(JSON.stringify({debtId:'8291',paidAt:'2025-02-10 12:00:00',paidAmount:100,paidBy:'John Doe'})).digest('hex'))"
+```
+
+Enviar requisição:
+```bash
+curl -X POST http://localhost:3000/webhooks/payments   -H "X-Signature: <assinatura>"   -H "Content-Type: application/json"   -d '{"debtId":"8291","paidAt":"2025-02-10 12:00:00","paidAmount":100,"paidBy":"John Doe"}'
+```
 
 ---
 
