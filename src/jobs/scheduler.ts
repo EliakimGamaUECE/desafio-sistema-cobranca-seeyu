@@ -1,6 +1,13 @@
 import cron from 'node-cron';
-import app from '../app'; 
+import { env } from '../config/env';
 
 cron.schedule('* * * * *', async () => {
-  fetch('http://localhost:3000/billing/run', { method: 'POST' }).catch(()=>{});
+  try {
+    await fetch(env.billingRunUrl, {
+      method: 'POST',
+      headers: env.cronToken ? { Authorization: `Bearer ${env.cronToken}` } : {},
+    });
+  } catch {
+    // silencioso por enquanto; poderia logar se preferir
+  }
 });

@@ -9,4 +9,11 @@ export const env = {
     pass: process.env.SMTP_PASS!,
   },
   webhookSecret: process.env.WEBHOOK_SECRET ?? 'dev-secret',
+
+  // NOVO: URL usada pelo cron para disparar o billing e token opcional
+  billingRunUrl:
+    process.env.BILLING_RUN_URL ??
+    `http://127.0.0.1:${Number(process.env.PORT ?? 3000)}/billing/run`,
+  cronToken: process.env.CRON_TOKEN, // se definido, exige Bearer no endpoint
 };
+
