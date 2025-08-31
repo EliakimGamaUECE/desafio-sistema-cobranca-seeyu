@@ -1,19 +1,18 @@
-// tests/app.integration.test.ts
 import path from 'path';
 import request from 'supertest';
 import crypto from 'crypto';
 import { prisma } from '../src/infra/prisma';
 
-// 1) Sete as envs ANTES de importar o app
-process.env.MAIL_MODE = 'mock';          // força jsonTransport (sem Ethereal)
-process.env.CRON_TOKEN = '';             // desativa proteção do /billing/run
-process.env.BILLING_BATCH_SIZE = '5';    // agiliza o teste
-process.env.MAIL_RATE_DELAY_MS = '0';    // sem delays
 
-// 2) Agora pode importar o app com as envs já definidas
+process.env.MAIL_MODE = 'mock';          
+process.env.CRON_TOKEN = '';             
+process.env.BILLING_BATCH_SIZE = '5'; 
+process.env.MAIL_RATE_DELAY_MS = '0';
+
+
 import app from '../src/app';
 
-// 3) Timeout mais folgado para I/O
+
 jest.setTimeout(20_000);
 
 beforeAll(async () => {
@@ -37,7 +36,6 @@ describe('API integration', () => {
 
     const res = await request(app)
       .post('/imports')
-      // anexa um Buffer em vez de arquivo de disco
       .attach('file', csvBuf, { filename: 'import.csv', contentType: 'text/csv' });
 
     expect(res.status).toBe(201);

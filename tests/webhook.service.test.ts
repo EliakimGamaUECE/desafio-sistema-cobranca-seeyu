@@ -3,7 +3,6 @@ import { WebhookService } from '../src/services/webhook.service';
 import { InMemoryDebtRepository } from '../src/repositories/debt.repository';
 import { AppError } from '../src/utils/errors';
 
-// O env.webhookSecret padrão é "dev-secret" (definido no seu env.ts).
 const SECRET = 'dev-secret';
 const sign = (raw: string) =>
   crypto.createHmac('sha256', SECRET).update(raw).digest('hex');
@@ -27,12 +26,11 @@ describe('WebhookService', () => {
     const svc = new WebhookService(new InMemoryDebtRepository() as any);
     const raw = JSON.stringify({ ex: 1 });
 
-    // ok
+
     expect(() => svc.verifySignature(raw, sign(raw))).not.toThrow();
 
-    // inválido
     expect(() => svc.verifySignature(raw, 'bad-signature'))
-      .toThrow(AppError); // status 401
+      .toThrow(AppError);
   });
 
   test('handlePayment marca a dívida como PAID quando válida', async () => {
@@ -41,7 +39,7 @@ describe('WebhookService', () => {
 
     await svc.handlePayment({
       debtId: 'D1',
-      paidAt: '2025-02-10 12:00:00', // formato do enunciado
+      paidAt: '2025-02-10 12:00:00',
       paidAmount: 100,
       paidBy: 'Banco X',
     });
@@ -67,7 +65,7 @@ describe('WebhookService', () => {
     ).resolves.not.toThrow();
 
     const d = await repo.findById('D1');
-    expect(d?.status).toBe('PAID'); // permanece pago
+    expect(d?.status).toBe('PAID');
   });
 
   test('404 quando debtId não existe', async () => {

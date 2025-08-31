@@ -8,6 +8,5 @@ cron.schedule('* * * * *', async () => {
       headers: env.cronToken ? { Authorization: `Bearer ${env.cronToken}` } : {},
     });
   } catch {
-    // silencioso por enquanto; poderia logar se preferir
   }
 });

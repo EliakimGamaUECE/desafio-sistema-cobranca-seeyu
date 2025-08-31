@@ -1,4 +1,3 @@
-// src/controllers/webhook.controller.ts
 import { Request, Response, NextFunction } from 'express';
 import { WebhookService } from '../services/webhook.service';
 

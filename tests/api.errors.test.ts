@@ -1,4 +1,3 @@
-// tests/api.errors.test.ts
 import request from 'supertest';
 
 

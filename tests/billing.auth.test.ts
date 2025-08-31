@@ -1,11 +1,10 @@
-// tests/billing.auth.test.ts
 import request from 'supertest';
 
 describe('Proteção do /billing/run com CRON_TOKEN', () => {
   let appWithToken: any;
 
   beforeAll(() => {
-    process.env.MAIL_MODE = 'mock';       // 👈 evita Ethereal
+    process.env.MAIL_MODE = 'mock';      
     process.env.CRON_TOKEN = 'test-token';
     appWithToken = require('../src/app').default;
   });
