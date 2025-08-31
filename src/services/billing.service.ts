@@ -1,6 +1,7 @@
 import { DebtRepository } from '../repositories/debt.repository';
 import { MailProvider } from '../providers/mail.provider';
 import { BoletoProvider } from '../providers/boleto.provider';
+import { env } from '../config/env';
 
 export class BillingService {
   constructor(
@@ -28,15 +29,14 @@ export class BillingService {
     for (const d of toProcess) {
       let url: string;
       try {
-        const gen = await this.boleto.generate(
-          d.debtAmount,
-          d.debtDueDate,
-          { name: d.name, doc: d.governmentId }
-        );
-        url = gen.url;
+        // 1) (opcional) ainda chama o provider se quiser manter o contrato
+        // const gen = await this.boleto.generate(d.debtAmount, d.debtDueDate, { name: d.name, doc: d.governmentId });
+        // 2) mas a URL final apontará para o PDF da própria API:
+        const base = process.env.APP_BASE_URL ?? `http://localhost:${env.port}`;
+        url = `${base}/boletos/${encodeURIComponent(d.debtId)}.pdf`;
       } catch {
         boletoFailures++;
-        continue; 
+        continue;
       }
 
       const trySend = async () => {

@@ -7,6 +7,7 @@ import { BillingService } from '../services/billing.service';
 import { WebhookService } from '../services/webhook.service';
 import { NodemailerProvider } from '../providers/mail.provider';
 import { MockBoletoProvider } from '../providers/boleto.provider';
+import { boletoPdf } from '../controllers/boleto.controller';
 
 import { importCsv } from '../controllers/import.controller';
 import { runBilling, getBillingStats } from '../controllers/billing.controller';
@@ -152,5 +153,29 @@ router.post('/webhooks/payments', paymentWebhook(webhookSvc));
  *         description: Lista de dívidas
  */
 router.get('/debts', async (_req, res) => res.json(await repo.findAll()));
+
+/** 
+ @swagger
+ * /boletos/{debtId}.pdf:
+ *   get:
+ *     tags: [Debug]
+ *     summary: Visualiza o boleto fake em PDF gerado on-the-fly
+ *     parameters:
+ *       - in: path
+ *         name: debtId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: PDF do boleto
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Dívida não encontrada
+ */
+router.get('/boletos/:debtId.pdf', boletoPdf(repo));
 
 export default router;
