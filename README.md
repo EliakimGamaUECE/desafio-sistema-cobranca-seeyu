@@ -133,5 +133,16 @@ curl -X POST http://localhost:3000/webhooks/payments   -H "X-Signature: <assinat
 
 ---
 
+## Diagramas de Fluxo
+
+Fluxos implementados no desafio:
+
+- Importar CSV → Banco  
+- Billing (geração de boletos + envio de e-mails)  
+- Webhook de pagamento
+- Fluxo geral da aplicação
+
+![Visão Geral](docs/diagrams/)
+
 ## Licença
 MIT
