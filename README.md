@@ -16,7 +16,7 @@ Arquitetura em camadas com traços de **DDD + Ports & Adapters**
 
 ---
 
-## ⚙️ Configuração
+## Configuração
 
 ### `.env.example`
 ```ini
@@ -60,7 +60,7 @@ npm run dev
 
 ---
 
-## 📡 API
+## API
 
 ### Importar CSV
 `POST /imports` (multipart, campo `file`)  
@@ -109,6 +109,25 @@ npm run test:cov
 
 ---
 
+## Documentação da API
+Acesse a UI do Swagger em:
+
+http://localhost:3000/docs
+
+Todas as rotas (`/imports`, `/billing/run`, `/billing/stats`, `/webhooks/payments`) estão documentadas no Swagger com exemplos de payloads e responses.
+
+
+## API (resumo)
+- `POST /imports` → Importa CSV de dívidas
+- `POST /billing/run` → Executa rodada de billing
+- `GET /billing/stats` → Estatísticas de dívidas
+- `POST /webhooks/payments` → Webhook de pagamento
+- `GET /debts` → Debug (lista todas as dívidas)
+
+Para detalhes, veja [Swagger UI](http://localhost:3000/docs).
+
+---
+
 ## Boas práticas aplicadas
 - **SOLID** e separação por camadas (Controllers, Services, Providers, Repos)  
 - **Idempotência** (`upsert` no import, no-op se já estiver `PAID`)  
@@ -119,5 +138,5 @@ npm run test:cov
 
 ---
 
-## 📄 Licença
+## Licença
 MIT
