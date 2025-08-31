@@ -29,19 +29,16 @@ export class BillingService {
     for (const d of toProcess) {
       let url: string;
       try {
-        // Mantém a chamada ao provider para satisfazer o teste (spy jest)
         const gen = await this.boleto.generate(
           d.debtAmount,
           d.debtDueDate,
           { name: d.name, doc: d.governmentId }
         );
 
-        // URL final aponta para nosso PDF (preferimos a nossa)
+
         const base = process.env.APP_BASE_URL ?? `http://localhost:${env.port}`;
         url = `${base}/boletos/${encodeURIComponent(d.debtId)}.pdf`;
 
-        // Se quiser usar a do provider como fallback:
-        // url = gen?.url ?? `${base}/boletos/${encodeURIComponent(d.debtId)}.pdf`;
       } catch {
         boletoFailures++;
         continue;
