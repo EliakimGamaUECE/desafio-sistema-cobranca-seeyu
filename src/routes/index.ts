@@ -9,7 +9,7 @@ import { NodemailerProvider } from '../providers/mail.provider';
 import { MockBoletoProvider } from '../providers/boleto.provider';
 
 import { importCsv } from '../controllers/import.controller';
-import { runBilling, getBillingStats } from '../controllers/billing.controller'; // ✅ único import
+import { runBilling, getBillingStats } from '../controllers/billing.controller';
 import { paymentWebhook } from '../controllers/webhook.controller';
 
 const router = Router();

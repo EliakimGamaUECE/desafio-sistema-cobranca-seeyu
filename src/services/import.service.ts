@@ -7,7 +7,7 @@ export class ImportService {
 
   async importRows(rows: Record<string,string>[]) {
     const debts: Debt[] = rows.map(r => {
-      const v = ImportCsvRowSchema.parse(r); // valida linha a linha
+      const v = ImportCsvRowSchema.parse(r);
       return {
         debtId: v.debtId, name: v.name, governmentId: v.governmentId,
         email: v.email, debtAmount: v.debtAmount, debtDueDate: v.debtDueDate,

@@ -1,4 +1,4 @@
-// src/providers/mail.provider.ts
+
 import nodemailer from 'nodemailer';
 import { env } from '../config/env';
 import { log } from '../config/logger';
@@ -17,13 +17,10 @@ export class NodemailerProvider implements MailProvider {
   }
 
   private async buildTransporter() {
-    // 1) Modo mock: não usa rede, imprime JSON do e-mail no console
     if (process.env.MAIL_MODE === 'mock') {
       log.info('Mail in MOCK mode (jsonTransport). No SMTP connection will be made.');
       return nodemailer.createTransport({ jsonTransport: true });
     }
-
-    // 2) Se não tem credenciais, cria uma conta Ethereal automaticamente
     if (!env.smtp.user || !env.smtp.pass) {
       const acc = await nodemailer.createTestAccount();
       log.info('Using Ethereal test account');
@@ -34,16 +31,16 @@ export class NodemailerProvider implements MailProvider {
       });
     }
 
-    // 3) Credenciais vindas do .env
+
     return nodemailer.createTransport({
       host: env.smtp.host,
       port: env.smtp.port,
       auth: { user: env.smtp.user, pass: env.smtp.pass },
       pool: true,
       maxConnections: 1,
-      maxMessages: 50,     // limite conservador
-      rateDelta: 1000,     // janela de 1s
-      rateLimit: 3         // até 3 msgs/seg
+      maxMessages: 50,    
+      rateDelta: 1000,   
+      rateLimit: 3 
     });
   }
 
@@ -64,7 +61,6 @@ export class NodemailerProvider implements MailProvider {
     if (preview) {
       log.info('Preview Ethereal:', preview);
     } else if (process.env.MAIL_MODE === 'mock') {
-      // jsonTransport: o info.message contém o MIME, às vezes como Buffer
       const msg = (info as any).message;
       const out = Buffer.isBuffer(msg) ? msg.toString() : msg ?? JSON.stringify(info);
       log.info('Mock email payload:', out);

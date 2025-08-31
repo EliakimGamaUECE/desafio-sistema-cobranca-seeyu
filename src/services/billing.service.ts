@@ -26,7 +26,6 @@ export class BillingService {
     const toProcess = pending.slice(0, batchSize);
 
     for (const d of toProcess) {
-      // 1) gera boleto (se falhar, não tenta enviar e-mail)
       let url: string;
       try {
         const gen = await this.boleto.generate(
@@ -37,10 +36,9 @@ export class BillingService {
         url = gen.url;
       } catch {
         boletoFailures++;
-        continue; // segue para o próximo
+        continue; 
       }
 
-      // 2) envia e-mail (com retry simples para 429)
       const trySend = async () => {
         try {
           await this.mail.sendChargeEmail({
@@ -71,17 +69,14 @@ export class BillingService {
         await trySend();
       } catch {
         emailFailures++;
-        // Não marca como INVOICED — permanece PENDING
         if (sendDelayMs > 0) await new Promise(r => setTimeout(r, sendDelayMs));
         continue;
       }
 
-      // 3) marca como INVOICED (só depois do e-mail OK)
       try {
-        await this.repo.markInvoiced(d.debtId, url!); // ideal: repo já seta lastEmailAt = now
+        await this.repo.markInvoiced(d.debtId, url!);
       } catch {
         markInvoicedFailures++;
-        // e-mail foi, mas falhou persistir: tenta seguir para não travar o lote
       }
 
       processedNow++;
@@ -91,7 +86,6 @@ export class BillingService {
       }
     }
 
-    // Reconta PENDING para relatório final
     const after = await this.repo.findAll();
     const pendingAfter = after.filter(d => d.status === 'PENDING').length;
 
@@ -99,10 +93,10 @@ export class BillingService {
       totalImported: all.length,
       batchSize: toProcess.length,
       pendingBefore: pending.length,
-      processedNow,             // só quem realmente virou INVOICED
-      emailFailures,            // falha ao enviar e-mail
-      boletoFailures,           // falha ao gerar boleto
-      markInvoicedFailures,     // e-mail ok, mas falhou persistência
+      processedNow,
+      emailFailures,
+      boletoFailures,
+      markInvoicedFailures,
       pendingAfter
     };
   }

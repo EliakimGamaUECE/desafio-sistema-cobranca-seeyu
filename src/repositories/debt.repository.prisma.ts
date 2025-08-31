@@ -1,13 +1,13 @@
 import { prisma } from '../infra/prisma';
 import { Debt as DomainDebt } from '../domain/debt';
 
-// helpers p/ mapear Prisma <-> domínio (Decimal -> number)
+
 const toDomain = (r: any): DomainDebt => ({
   debtId: r.debtId,
   name: r.name,
   governmentId: r.governmentId,
   email: r.email,
-  debtAmount: Number(r.debtAmount),       // Decimal -> number
+  debtAmount: Number(r.debtAmount),  
   debtDueDate: r.debtDueDate,
   status: r.status,
   boletoUrl: r.boletoUrl ?? undefined,
@@ -19,7 +19,6 @@ const toDomain = (r: any): DomainDebt => ({
 
 export class PrismaDebtRepository {
   async upsertMany(debts: DomainDebt[]): Promise<void> {
-    // Prisma não tem createManyUpsert; então fazemos upserts em lote
     await prisma.$transaction(
       debts.map(d =>
         prisma.debt.upsert({
@@ -29,7 +28,7 @@ export class PrismaDebtRepository {
             name: d.name,
             governmentId: d.governmentId,
             email: d.email,
-            debtAmount: d.debtAmount, // Prisma converte number->Decimal
+            debtAmount: d.debtAmount,
             debtDueDate: d.debtDueDate,
             status: d.status as any,
           },
